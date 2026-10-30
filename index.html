@@ -24,6 +24,14 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .btn-signout { font-size: 11px; color: #666; background: none; border: 1px solid #333; border-radius: 6px; padding: 3px 8px; cursor: pointer; }
 .btn-signout:hover { color: #c0504a; border-color: #5a2020; }
 
+/* ANNOUNCEMENT TICKER */
+.announce-bar { background: #1a1a0d; border: 1px solid #c8a832; border-radius: 8px; margin-bottom: 10px; padding: 6px 10px; overflow: hidden; position: relative; }
+.announce-inner { display: flex; align-items: center; gap: 8px; }
+.announce-icon { font-size: 14px; flex-shrink: 0; }
+.announce-ticker { overflow: hidden; flex: 1; }
+.announce-text { display: inline-block; white-space: nowrap; font-size: 12px; color: #c8a832; font-weight: 500; animation: ticker 20s linear infinite; }
+@keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+
 .controls-row { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 10px; padding: 10px 12px; margin-bottom: 10px; }
 .rate-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
 .rate-row label { font-size: 13px; color: #aaa; }
@@ -104,6 +112,29 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .wb-total-label { font-size: 12px; font-weight: 500; color: #eee; }
 .wb-total-val { font-size: 12px; font-weight: 500; color: #4caf82; }
 
+/* CONTACT & ABOUT FOOTER */
+.app-footer { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 10px; padding: 12px; margin-bottom: 1rem; }
+.footer-title { font-size: 11px; color: #555; margin-bottom: 8px; font-weight: 600; letter-spacing: 0.5px; }
+.contact-row { display: flex; align-items: center; gap: 8px; padding: 4px 0; font-size: 12px; color: #aaa; }
+.contact-row a { color: #4ea3e0; text-decoration: none; }
+.contact-row a:hover { text-decoration: underline; }
+.footer-version { font-size: 10px; color: #444; margin-top: 8px; padding-top: 6px; border-top: 1px solid #2a2a2a; }
+
+/* ADMIN PANEL */
+.admin-btn { width: 100%; padding: 8px; background: none; border: 1px solid #333; border-radius: 8px; color: #555; font-size: 11px; cursor: pointer; margin-bottom: 1rem; }
+.admin-btn:hover { background: #1a1a1a; color: #c8a832; border-color: #c8a832; }
+.admin-section { background: #1a1a0d; border: 1px solid #c8a832; border-radius: 10px; padding: 12px; margin-bottom: 1rem; }
+.admin-section h3 { font-size: 13px; color: #c8a832; margin-bottom: 10px; font-weight: 600; }
+.admin-field { margin-bottom: 8px; }
+.admin-field label { font-size: 11px; color: #888; display: block; margin-bottom: 3px; }
+.admin-field input, .admin-field textarea { width: 100%; background: #111; border: 1px solid #333; border-radius: 6px; padding: 6px 8px; color: #fff; font-size: 12px; }
+.admin-field textarea { resize: vertical; min-height: 60px; font-family: inherit; }
+.admin-actions { display: flex; gap: 8px; margin-top: 10px; }
+.btn-admin-save { flex: 1; padding: 8px; background: #c8a832; color: #111; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
+.btn-admin-save:hover { background: #e0c040; }
+.admin-toggle-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.admin-toggle-label { font-size: 12px; color: #aaa; }
+
 .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 1rem; }
 .modal-overlay.hidden { display: none; }
 .modal { background: #1a1a1a; border: 1px solid #333; border-radius: 14px; padding: 1.25rem; width: 100%; max-width: 320px; max-height: 90vh; overflow-y: auto; }
@@ -176,6 +207,16 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
       </div>
     </div>
 
+    <!-- ANNOUNCEMENT TICKER -->
+    <div class="announce-bar hidden" id="announce-bar">
+      <div class="announce-inner">
+        <span class="announce-icon">📢</span>
+        <div class="announce-ticker">
+          <span class="announce-text" id="announce-text"></span>
+        </div>
+      </div>
+    </div>
+
     <div class="controls-row">
       <div class="rate-row">
         <label>Default €/hr</label>
@@ -237,6 +278,51 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
         </div>
       </div>
     </div>
+
+    <!-- CONTACT / ABOUT FOOTER -->
+    <div class="app-footer hidden" id="app-footer">
+      <div class="footer-title">📬 CONTACT & SUPPORT</div>
+      <div id="contact-rows"></div>
+      <div class="footer-version" id="footer-version"></div>
+    </div>
+
+    <!-- ADMIN PANEL TOGGLE (only visible to admin) -->
+    <button class="admin-btn hidden" id="admin-toggle-btn">⚙️ Admin Panel</button>
+
+    <!-- ADMIN PANEL -->
+    <div class="admin-section hidden" id="admin-panel">
+      <h3>⚙️ Admin Panel</h3>
+
+      <!-- Announcement -->
+      <div style="margin-bottom:14px;">
+        <div style="font-size:11px;color:#c8a832;margin-bottom:6px;font-weight:600;">📢 Announcement</div>
+        <div class="admin-toggle-row">
+          <span class="admin-toggle-label">Show announcement ticker</span>
+          <button class="toggle-btn" id="announce-toggle"></button>
+        </div>
+        <div class="admin-field">
+          <label>Message (emoji supported 🎉)</label>
+          <textarea id="admin-announce-text" placeholder="e.g. 🎉 New feature released! Check it out."></textarea>
+        </div>
+        <button class="btn-admin-save" id="save-announce-btn">💾 Save Announcement</button>
+      </div>
+
+      <hr style="border:none;border-top:1px solid #333;margin:12px 0;">
+
+      <!-- Contact -->
+      <div>
+        <div style="font-size:11px;color:#c8a832;margin-bottom:6px;font-weight:600;">📬 Contact Information</div>
+        <div class="admin-field"><label>Email</label><input type="text" id="admin-email" placeholder="support@example.com"></div>
+        <div class="admin-field"><label>Line ID</label><input type="text" id="admin-line" placeholder="@shifttracker"></div>
+        <div class="admin-field"><label>Facebook</label><input type="text" id="admin-facebook" placeholder="facebook.com/shifttracker"></div>
+        <div class="admin-field"><label>Website</label><input type="text" id="admin-website" placeholder="https://..."></div>
+        <div class="admin-field"><label>Phone</label><input type="text" id="admin-phone" placeholder="+358 XX XXX XXXX"></div>
+        <div class="admin-field"><label>Note</label><input type="text" id="admin-note" placeholder="e.g. Available Mon-Fri 9am-5pm"></div>
+        <div class="admin-field"><label>App version / info</label><input type="text" id="admin-version" placeholder="e.g. v2.0 — Oct 2026"></div>
+        <button class="btn-admin-save" id="save-contact-btn">💾 Save Contact Info</button>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -306,6 +392,13 @@ const firebaseConfig = {
   appId: "1:780527591074:web:dbaf4bff9a51d103f981fb"
 };
 
+// ============================================================
+// SET YOUR ADMIN UID HERE (from Firebase Authentication tab)
+// หา UID ได้จาก Firebase → Authentication → Users → copy User UID
+// ============================================================
+const ADMIN_UIDS = ['9xNHIlxFtYShVZQe5FtQNK6cD1V2', 'xIGW9TBNbdQXP0TEMNh5maPgOhf1'];
+// ============================================================
+
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
@@ -318,11 +411,13 @@ const WP_COLORS=['#4caf82','#4ea3e0','#e07050','#c8a832','#b07ad6','#e05090'];
 let currentDate=new Date(); currentDate.setDate(1);
 let shifts={}, selectedDay=null, hourlyRate=12.1, multiMode=false;
 let currentUser=null, unsubShifts=null, workplaces=[], gcalToken=null;
+let isAdmin=false;
+let announceActive=false;
 
 const syncEl=document.getElementById('sync-status');
 const multiToggle=document.getElementById('multi-toggle');
+const announceToggle=document.getElementById('announce-toggle');
 
-// Toast
 function showToast(msg, isError=false) {
   const t=document.getElementById('toast');
   t.textContent=msg; t.className='toast'+(isError?' error':'');
@@ -330,22 +425,30 @@ function showToast(msg, isError=false) {
   setTimeout(()=>t.classList.remove('show'),3000);
 }
 
-// Auth
+// ============================================================
+// AUTH
+// ============================================================
 const provider = new GoogleAuthProvider();
 provider.addScope('https://www.googleapis.com/auth/calendar.events');
 
 onAuthStateChanged(auth, async user => {
   if(user) {
     currentUser=user;
+    isAdmin = ADMIN_UIDS.includes(user.uid);
     document.getElementById('login-screen').classList.add('hidden');
     document.getElementById('main-app').classList.remove('hidden');
     document.getElementById('user-avatar').src=user.photoURL||'';
+    if(isAdmin) {
+      document.getElementById('admin-toggle-btn').classList.remove('hidden');
+    }
     await loadWorkplaces();
     subscribeShifts();
     loadMonthSettings(currentDate.getFullYear(),currentDate.getMonth());
     loadGcalToken();
+    loadAnnouncement();
+    loadContactInfo();
   } else {
-    currentUser=null;
+    currentUser=null; isAdmin=false;
     document.getElementById('login-screen').classList.remove('hidden');
     document.getElementById('main-app').classList.add('hidden');
     if(unsubShifts){unsubShifts();unsubShifts=null;}
@@ -357,15 +460,128 @@ document.getElementById('btn-google-login').addEventListener('click', async()=>{
 });
 document.getElementById('btn-signout').addEventListener('click', ()=>signOut(auth));
 
-// Google Calendar OAuth
+// ============================================================
+// ANNOUNCEMENT (ข้อ 3)
+// ============================================================
+async function loadAnnouncement() {
+  try {
+    const snap = await getDoc(doc(db,'announcements','current'));
+    if(snap.exists()) {
+      const data = snap.data();
+      const text = data.text || '';
+      const active = data.active !== false;
+      announceActive = active;
+      if(active && text) {
+        document.getElementById('announce-text').textContent = text;
+        document.getElementById('announce-bar').classList.remove('hidden');
+      } else {
+        document.getElementById('announce-bar').classList.add('hidden');
+      }
+      // Populate admin fields if admin
+      if(isAdmin) {
+        document.getElementById('admin-announce-text').value = text;
+        announceToggle.classList.toggle('on', active);
+      }
+    }
+  } catch(e) { console.log('No announcement'); }
+}
+
+if(announceToggle) {
+  announceToggle.addEventListener('click',()=>{
+    announceActive=!announceActive;
+    announceToggle.classList.toggle('on',announceActive);
+  });
+}
+
+document.getElementById('save-announce-btn').addEventListener('click', async()=>{
+  if(!isAdmin) return;
+  const text = document.getElementById('admin-announce-text').value.trim();
+  try {
+    await setDoc(doc(db,'announcements','current'), { text, active: announceActive });
+    if(announceActive && text) {
+      document.getElementById('announce-text').textContent = text;
+      document.getElementById('announce-bar').classList.remove('hidden');
+    } else {
+      document.getElementById('announce-bar').classList.add('hidden');
+    }
+    showToast('✅ Announcement saved!');
+  } catch(e) { showToast('Error saving announcement', true); console.error(e); }
+});
+
+// ============================================================
+// CONTACT INFO (ข้อ 4)
+// ============================================================
+async function loadContactInfo() {
+  try {
+    const snap = await getDoc(doc(db,'settings','contact'));
+    if(snap.exists()) {
+      const d = snap.data();
+      const contactRows = document.getElementById('contact-rows');
+      const footer = document.getElementById('app-footer');
+      let html = '';
+      if(d.email) html += `<div class="contact-row">📧 <a href="mailto:${d.email}">${d.email}</a></div>`;
+      if(d.line) html += `<div class="contact-row">💬 Line: ${d.line}</div>`;
+      if(d.facebook) html += `<div class="contact-row">👤 <a href="https://${d.facebook.replace('https://','')}" target="_blank">${d.facebook}</a></div>`;
+      if(d.website) html += `<div class="contact-row">🌐 <a href="${d.website}" target="_blank">${d.website}</a></div>`;
+      if(d.phone) html += `<div class="contact-row">📞 ${d.phone}</div>`;
+      if(d.note) html += `<div class="contact-row" style="color:#666;font-size:11px;">ℹ️ ${d.note}</div>`;
+      if(html) {
+        contactRows.innerHTML = html;
+        footer.classList.remove('hidden');
+      }
+      if(d.version) document.getElementById('footer-version').textContent = d.version;
+      // Populate admin fields
+      if(isAdmin) {
+        if(d.email) document.getElementById('admin-email').value = d.email;
+        if(d.line) document.getElementById('admin-line').value = d.line;
+        if(d.facebook) document.getElementById('admin-facebook').value = d.facebook;
+        if(d.website) document.getElementById('admin-website').value = d.website;
+        if(d.phone) document.getElementById('admin-phone').value = d.phone;
+        if(d.note) document.getElementById('admin-note').value = d.note;
+        if(d.version) document.getElementById('admin-version').value = d.version;
+      }
+    }
+  } catch(e) { console.log('No contact info'); }
+}
+
+document.getElementById('save-contact-btn').addEventListener('click', async()=>{
+  if(!isAdmin) return;
+  const data = {
+    email: document.getElementById('admin-email').value.trim(),
+    line: document.getElementById('admin-line').value.trim(),
+    facebook: document.getElementById('admin-facebook').value.trim(),
+    website: document.getElementById('admin-website').value.trim(),
+    phone: document.getElementById('admin-phone').value.trim(),
+    note: document.getElementById('admin-note').value.trim(),
+    version: document.getElementById('admin-version').value.trim(),
+  };
+  // Remove empty fields
+  Object.keys(data).forEach(k=>{ if(!data[k]) delete data[k]; });
+  try {
+    await setDoc(doc(db,'settings','contact'), data);
+    showToast('✅ Contact info saved!');
+    loadContactInfo();
+  } catch(e) { showToast('Error saving contact info', true); console.error(e); }
+});
+
+// ============================================================
+// ADMIN PANEL TOGGLE (ข้อ 5)
+// ============================================================
+document.getElementById('admin-toggle-btn').addEventListener('click',()=>{
+  const panel = document.getElementById('admin-panel');
+  panel.classList.toggle('hidden');
+  document.getElementById('admin-toggle-btn').textContent =
+    panel.classList.contains('hidden') ? '⚙️ Admin Panel' : '▲ Close Admin Panel';
+});
+
+// ============================================================
+// GOOGLE CALENDAR
+// ============================================================
 function loadGcalToken() {
   const t=localStorage.getItem('gcal_token');
   const exp=localStorage.getItem('gcal_token_exp');
-  if(t && exp && Date.now()<parseInt(exp)) {
-    gcalToken=t; updateGcalUI(true);
-  } else {
-    gcalToken=null; updateGcalUI(false);
-  }
+  if(t && exp && Date.now()<parseInt(exp)) { gcalToken=t; updateGcalUI(true); }
+  else { gcalToken=null; updateGcalUI(false); }
 }
 
 function updateGcalUI(connected) {
@@ -374,28 +590,20 @@ function updateGcalUI(connected) {
   const btn=document.getElementById('btn-gcal-connect');
   const cbWrap=document.getElementById('gcal-checkbox-wrap');
   if(connected) {
-    dot.classList.add('connected');
-    txt.textContent='Google Calendar: connected';
-    btn.textContent='Disconnect';
-    btn.classList.add('connected');
+    dot.classList.add('connected'); txt.textContent='Google Calendar: connected';
+    btn.textContent='Disconnect'; btn.classList.add('connected');
     cbWrap.classList.remove('hidden');
   } else {
-    dot.classList.remove('connected');
-    txt.textContent='Google Calendar: not connected';
-    btn.textContent='Connect';
-    btn.classList.remove('connected');
+    dot.classList.remove('connected'); txt.textContent='Google Calendar: not connected';
+    btn.textContent='Connect'; btn.classList.remove('connected');
     cbWrap.classList.add('hidden');
   }
 }
 
 document.getElementById('btn-gcal-connect').addEventListener('click', async()=>{
   if(gcalToken) {
-    gcalToken=null;
-    localStorage.removeItem('gcal_token');
-    localStorage.removeItem('gcal_token_exp');
-    updateGcalUI(false);
-    showToast('Google Calendar disconnected');
-    return;
+    gcalToken=null; localStorage.removeItem('gcal_token'); localStorage.removeItem('gcal_token_exp');
+    updateGcalUI(false); showToast('Google Calendar disconnected'); return;
   }
   try {
     const gcalProvider=new GoogleAuthProvider();
@@ -405,15 +613,10 @@ document.getElementById('btn-gcal-connect').addEventListener('click', async()=>{
     gcalToken=credential.accessToken;
     localStorage.setItem('gcal_token',gcalToken);
     localStorage.setItem('gcal_token_exp',Date.now()+3500000);
-    updateGcalUI(true);
-    showToast('✅ Google Calendar connected!');
-  } catch(e) {
-    showToast('Failed to connect Google Calendar', true);
-    console.error(e);
-  }
+    updateGcalUI(true); showToast('✅ Google Calendar connected!');
+  } catch(e) { showToast('Failed to connect Google Calendar', true); console.error(e); }
 });
 
-// Add event to Google Calendar
 async function addToGcal(dateStr, shiftList, title='Work Shift') {
   if(!gcalToken) return false;
   const [y,mo,d]=dateStr.split('-');
@@ -423,18 +626,14 @@ async function addToGcal(dateStr, shiftList, title='Work Shift') {
     const summary = s.wp ? 'Work - '+s.wp : (shiftList.length>1 ? title+' ('+(i+1)+')' : title);
     const h=calcHours(s.start,s.end,s.brk||0);
     const earn=(h*(s.rate||hourlyRate)).toFixed(2);
-    // Handle overnight shifts: if end <= start, end is next day
     const startMins=timeToMins(s.start), endMins=timeToMins(s.end);
     const startDT=`${y}-${mo}-${d}T${s.start}:00`;
     let endDT;
     if(endMins<=startMins) {
-      // Next day
       const nextDay=new Date(parseInt(y),parseInt(mo)-1,parseInt(d)+1);
       const ny=nextDay.getFullYear(),nm=String(nextDay.getMonth()+1).padStart(2,'0'),nd=String(nextDay.getDate()).padStart(2,'0');
       endDT=`${ny}-${nm}-${nd}T${s.end}:00`;
-    } else {
-      endDT=`${y}-${mo}-${d}T${s.end}:00`;
-    }
+    } else { endDT=`${y}-${mo}-${d}T${s.end}:00`; }
     try {
       const res=await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events',{
         method:'POST',
@@ -449,10 +648,8 @@ async function addToGcal(dateStr, shiftList, title='Work Shift') {
       });
       if(res.ok) successCount++;
       else {
-        const err=await res.json();
-        console.error('GCal error shift '+(i+1)+':',err);
-        failCount++;
-        if(res.status===401){gcalToken=null;localStorage.removeItem('gcal_token');updateGcalUI(false);showToast('Google Calendar token expired. Please reconnect.',true);return false;}
+        const err=await res.json(); console.error('GCal error:',err); failCount++;
+        if(res.status===401){gcalToken=null;localStorage.removeItem('gcal_token');updateGcalUI(false);showToast('GCal token expired. Reconnect.',true);return false;}
       }
     } catch(e) { console.error(e); failCount++; }
   }
@@ -460,25 +657,25 @@ async function addToGcal(dateStr, shiftList, title='Work Shift') {
   return failCount===0;
 }
 
-// Sync whole month to Google Calendar
 document.getElementById('sync-gcal-btn').addEventListener('click', async()=>{
   if(!gcalToken){showToast('Connect Google Calendar first',true);return;}
   const y=currentDate.getFullYear(),m=currentDate.getMonth();
   const monthKey=y+'-'+String(m+1).padStart(2,'0');
   const monthShifts=Object.keys(shifts).filter(k=>k.startsWith(monthKey));
   if(!monthShifts.length){showToast('No shifts this month',true);return;}
-  showToast('Syncing to Google Calendar...');
+  showToast('Syncing...');
   let count=0;
   for(const k of monthShifts) {
     const d=shifts[k];
     const sl=Array.isArray(d.shifts)?d.shifts:[{start:d.start,end:d.end,brk:d.brk||0,rate:d.rate||hourlyRate,wp:d.wp||''}];
-    await addToGcal(k,sl);
-    count++;
+    await addToGcal(k,sl); count++;
   }
   showToast('✅ Synced '+count+' days to Google Calendar!');
 });
 
-// Firebase shifts
+// ============================================================
+// FIREBASE SHIFTS
+// ============================================================
 function subscribeShifts() {
   if(!currentUser)return;
   if(unsubShifts)unsubShifts();
@@ -584,7 +781,7 @@ function render() {
       if(parseInt(p[0])===cy){
         const mk=p[0]+'-'+p[1],d=shifts[k];
         const sl=Array.isArray(d.shifts)?d.shifts:[{start:d.start,end:d.end,brk:d.brk||0,rate:d.rate||hourlyRate}];
-        sl.forEach(s=>{mh[mk]=(mh[mk]||{h:0,multi:false});mh[mk].h+=calcHours(s.start,s.end,s.brk)*(s.rate||hourlyRate);});
+        sl.forEach(s=>{mh[mk]=(mh[mk]||{h:0});mh[mk].h+=calcHours(s.start,s.end,s.brk)*(s.rate||hourlyRate);});
       }
     });
     Promise.all(Object.keys(mh).map(async mk=>{
@@ -635,15 +832,10 @@ function updateModalPreview(){
 function renderShiftBlocks(){
   document.getElementById('shift-blocks').innerHTML=modalShifts.map((s,i)=>buildShiftBlock(i,s)).join('');
   document.querySelectorAll('.sb-start,.sb-end,.sb-brk,.sb-rate').forEach(el=>el.addEventListener('input',updateModalPreview));
-
-  // Auto-update rate when workplace changes
   document.querySelectorAll('.sb-wp').forEach(sel=>sel.addEventListener('change',function(){
     const i=parseInt(this.dataset.idx);
     const wp=workplaces.find(w=>w.name===this.value);
-    if(wp){
-      const rateInput=document.querySelector('.sb-rate[data-idx="'+i+'"]');
-      if(rateInput) rateInput.value=wp.rate;
-    }
+    if(wp){const rateInput=document.querySelector('.sb-rate[data-idx="'+i+'"]');if(rateInput)rateInput.value=wp.rate;}
     updateModalPreview();
   }));
   document.querySelectorAll('.btn-remove-shift').forEach(btn=>btn.addEventListener('click',()=>{
@@ -751,7 +943,7 @@ document.getElementById('export-ics-btn').addEventListener('click',()=>{
   });
   lines.push('END:VCALENDAR');
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([lines.join('\r\n')],{type:'text/calendar'}));a.download='shifts.ics';a.click();
-  showToast('✅ .ics exported! Import into any calendar app.');
+  showToast('✅ .ics exported!');
 });
 
 // Export CSV
@@ -760,7 +952,7 @@ document.getElementById('export-sheets-btn').addEventListener('click',()=>{
   Object.keys(shifts).sort().forEach(k=>{const d=shifts[k];const sl=Array.isArray(d.shifts)?d.shifts:[{start:d.start,end:d.end,brk:d.brk||0,wp:'',rate:hourlyRate}];sl.forEach(s=>{const h=calcHours(s.start,s.end,s.brk||0);rows.push([k,s.wp||'',s.start,s.end,fmtH(h),(s.rate||hourlyRate).toFixed(2),(h*(s.rate||hourlyRate)).toFixed(2)]);});});
   const csv=rows.map(r=>r.map(c=>'"'+c+'"').join(',')).join('\n');
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='shifts.csv';a.click();
-  showToast('✅ CSV exported! Open in Google Sheets.');
+  showToast('✅ CSV exported!');
 });
 
 // Export PDF
@@ -789,39 +981,28 @@ function renderWpList(){
       <button class="btn-wp-edit" data-idx="${i}">✏️ Edit</button>
       <button class="wp-del" data-idx="${i}">✕</button>
     </div>`).join('');
-
-  // Edit button → show inline edit fields
   document.querySelectorAll('.btn-wp-edit').forEach(btn=>btn.addEventListener('click',()=>{
     const i=parseInt(btn.dataset.idx), w=workplaces[i];
     const item=document.getElementById('wpi-'+i);
-    // Toggle edit row
     const existing=item.querySelector('.wp-edit-row');
     if(existing){existing.remove();btn.textContent='✏️ Edit';return;}
     btn.textContent='▲ Close';
     const row=document.createElement('div');
     row.className='wp-edit-row';
-    row.innerHTML=`
-      <input type="text" class="wp-edit-name" value="${w.name}" placeholder="Name">
-      <input type="number" class="wp-edit-rate" value="${w.rate}" placeholder="€/hr" step="0.1" min="0">
-      <button class="btn-wp-save" data-idx="${i}">Save</button>`;
+    row.innerHTML=`<input type="text" class="wp-edit-name" value="${w.name}" placeholder="Name"><input type="number" class="wp-edit-rate" value="${w.rate}" placeholder="€/hr" step="0.1" min="0"><button class="btn-wp-save" data-idx="${i}">Save</button>`;
     item.appendChild(row);
     row.querySelector('.btn-wp-save').addEventListener('click', async()=>{
       const newName=row.querySelector('.wp-edit-name').value.trim();
       const newRate=parseFloat(row.querySelector('.wp-edit-rate').value)||workplaces[i].rate;
       if(!newName)return;
-      workplaces[i].name=newName;
-      workplaces[i].rate=newRate;
+      workplaces[i].name=newName; workplaces[i].rate=newRate;
       await saveWorkplaces();
-      showToast('✅ Workplace updated!');
-      renderWpList();
+      showToast('✅ Workplace updated!'); renderWpList();
     });
   }));
-
   document.querySelectorAll('.wp-del').forEach(btn=>btn.addEventListener('click',async()=>{
     workplaces.splice(parseInt(btn.dataset.idx),1);
-    await saveWorkplaces();
-    renderWpList();
-    showToast('Workplace removed');
+    await saveWorkplaces(); renderWpList(); showToast('Workplace removed');
   }));
 }
 
